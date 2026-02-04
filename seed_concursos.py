@@ -28,7 +28,6 @@ def seed():
     # 2. Inserir cargos (concurso_id, nome)
     cargos_data = [
         (concursos_map["Câmara dos Deputados"], "Policial Legislativo"),
-        (concursos_map["Câmara dos Deputados"], "Fiscal"),
         (concursos_map["SEFAZ PA"], "Fiscal de Receitas Estaduais"),
     ]
     for concurso_id, nome in cargos_data:
@@ -76,28 +75,6 @@ def seed():
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (pol_leg, q[0], q[1], q[2], q[3], q[4], q[5], q[6], q[7]))
 
-    # Câmara - Fiscal
-    fiscal_camara = cargos_map[("Câmara dos Deputados", "Fiscal")]
-    questoes_fiscal_c = [
-        (
-            "A modalidade de licitação utilizada para a venda de bens móveis inservíveis é o:",
-            "Pregão", "Convite", "Leilão", "Concurso",
-            "C", "Direito Administrativo",
-            "O **Leilão** (Lei 14.133/2021) é a modalidade de licitação para venda de bens móveis inservíveis ou para alienação de bens imóveis. Pregão é para compras e serviços comuns; Convite é para obras/serviços de pequeno valor; Concurso é para escolha de trabalho técnico, científico ou artístico."
-        ),
-        (
-            "O prazo de validade de um concurso público pode ser de até:",
-            "1 ano", "2 anos", "5 anos", "10 anos",
-            "B", "Direito Administrativo",
-            "O **prazo de validade do concurso** é de até **2 anos** (CF, art. 37, III), prorrogável uma vez por igual período. O edital deve estabelecer esse prazo. Após a nomeação, o candidato aprovado tem o direito subjetivo à nomeação dentro do prazo de validade."
-        ),
-    ]
-    for q in questoes_fiscal_c:
-        c.execute("""
-            INSERT INTO questoes (cargo_id, enunciado, op_a, op_b, op_c, op_d, correta, materia, explicacao_teorica)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (fiscal_camara, q[0], q[1], q[2], q[3], q[4], q[5], q[6], q[7]))
-
     # SEFAZ PA - Fiscal de Receitas Estaduais
     fiscal_sefaz = cargos_map[("SEFAZ PA", "Fiscal de Receitas Estaduais")]
     questoes_sefaz = [
@@ -128,7 +105,7 @@ def seed():
 
     conn.commit()
     conn.close()
-    print("Seed concluído: 2 concursos, 3 cargos e questões de exemplo com conteúdo teórico inseridos.")
+    print("Seed concluído: 2 concursos, 2 cargos e questões de exemplo com conteúdo teórico inseridos.")
 
 if __name__ == "__main__":
     seed()

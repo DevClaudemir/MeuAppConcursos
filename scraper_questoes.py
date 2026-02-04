@@ -345,3 +345,26 @@ if __name__ == "__main__":
     print("  scraper = ScraperQuestoes()")
     print("  urls = ['https://exemplo.com/questao1', 'https://exemplo.com/questao2']")
     print("  sucesso, erros, duplicatas = scraper.processar_urls(urls, cargo_id=1)")
+    
+    def verificar_dados():
+        conn = sqlite3.connect("banco_questoes.db")
+        c = conn.cursor()
+    
+    # 1. Verificar se a tabela existe
+        c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='questoes'")
+        if not c.fetchone():
+            print("❌ ERRO: A tabela 'questoes' não existe no banco!")
+            return
+
+    # 2. Contar questões totais
+        total = c.execute("SELECT COUNT(*) FROM questoes").fetchone()[0]
+        print(f"📊 Total de questões no banco: {total}")
+
+    # 3. Ver matérias encontradas
+        materias = c.execute("SELECT DISTINCT materia FROM questoes").fetchall()
+        print(f"📚 Matérias registradas: {[m[0] for m in materias]}")
+    
+        conn.close()
+
+if __name__ == "__main__":
+    verificar_dados()
