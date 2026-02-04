@@ -5,6 +5,15 @@ def criar_tabela():
     conexao = sqlite3.connect('banco_questoes.db')
     cursor = conexao.cursor()
 
+    # Tabela de usuários (precisa existir antes de admins)
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS usuarios (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL UNIQUE,
+        senha TEXT NOT NULL
+    )
+    ''')
+
     # Tabela de concursos (ex.: Câmara dos Deputados, SEFAZ PA)
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS concursos (
@@ -24,6 +33,42 @@ def criar_tabela():
     )
     ''')
 
+    # Tabela de admins (apenas dono)
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS admins (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        usuario_id INTEGER NOT NULL UNIQUE,
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+    )
+    ''')
+
+    # Tabela de assinaturas
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS assinaturas (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        usuario_id INTEGER NOT NULL,
+        data_inicio DATE NOT NULL,
+        data_fim DATE NOT NULL,
+        valor_pago REAL NOT NULL DEFAULT 5.00,
+        status TEXT NOT NULL DEFAULT 'ativa',
+        metodo_pagamento TEXT,
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+    )
+    ''')
+
+    # Tabela de comentários nas questões
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS comentarios_questoes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        questao_id INTEGER NOT NULL,
+        usuario_id INTEGER NOT NULL,
+        comentario TEXT NOT NULL,
+        data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (questao_id) REFERENCES questoes(id),
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+    )
+    ''')
+
     # Cria a estrutura da tabela de questões
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS questoes (
@@ -38,6 +83,11 @@ def criar_tabela():
         correta TEXT NOT NULL,
         materia TEXT NOT NULL,
         explicacao_teorica TEXT,
+        banca TEXT,
+        ano INTEGER,
+        orgao TEXT,
+        origem TEXT DEFAULT 'manual',
+        hash_enunciado TEXT,
         FOREIGN KEY (cargo_id) REFERENCES cargos(id)
     )
     ''')
@@ -49,6 +99,26 @@ def criar_tabela():
         pass
     try:
         cursor.execute('ALTER TABLE questoes ADD COLUMN explicacao_teorica TEXT')
+    except sqlite3.OperationalError:
+        pass
+    try:
+        cursor.execute('ALTER TABLE questoes ADD COLUMN banca TEXT')
+    except sqlite3.OperationalError:
+        pass
+    try:
+        cursor.execute('ALTER TABLE questoes ADD COLUMN ano INTEGER')
+    except sqlite3.OperationalError:
+        pass
+    try:
+        cursor.execute('ALTER TABLE questoes ADD COLUMN orgao TEXT')
+    except sqlite3.OperationalError:
+        pass
+    try:
+        cursor.execute('ALTER TABLE questoes ADD COLUMN origem TEXT DEFAULT "manual"')
+    except sqlite3.OperationalError:
+        pass
+    try:
+        cursor.execute('ALTER TABLE questoes ADD COLUMN hash_enunciado TEXT')
     except sqlite3.OperationalError:
         pass
 

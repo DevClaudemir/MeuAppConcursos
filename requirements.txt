@@ -2,3 +2,7 @@ streamlit
 pandas
 matplotlib
 streamlit-autorefresh
+requests
+beautifulsoup4
+selenium
+lxml
